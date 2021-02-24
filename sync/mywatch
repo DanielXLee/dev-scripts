@@ -1,0 +1,22 @@
+#!/bin/zsh
+
+# Monitoring directory
+# Example .mysync.json file
+# {
+#     "log_file": "～/mysync.log",
+#     "watch_dirs": [
+#         "~/go/src/github.com",
+#     ],
+#     "remote_servers": [
+#         "root@192.168.1.1"
+#     ],
+#     "sync_dirs": [
+#       {
+#           "local": "~/go/src/github.com/operator-framework/operator-lifecycle-manager",
+#           "remote": "/root/go/src/github.com/operator-framework/operator-lifecycle-manager"
+#       }
+#     ]
+# }
+config_json=~/.mysync.json
+M_DIRS=$(jq -r ".watch_dirs[]" ${config_json})
+fswatch -0 $(echo "$M_DIRS") | xargs -0 -n1 mysync

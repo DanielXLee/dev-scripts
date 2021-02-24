@@ -1,0 +1,42 @@
+#!/bin/bash
+# Sync local file to server
+# Use this script, run command:
+
+function log() {
+    [[ "X$1" == "X" ]] && return
+    echo "["$(date +"%y-%m-%d %H:%M:%S")"]" $1 | tee -a $log_file
+}
+
+function msg() {
+    printf '%b\n' "$1" | tee -a $log_file
+}
+
+function success() {
+    msg "\33[32m✔\33[0m ${1}"
+    echo "----------------------------------------------------------------------" | tee -a $log_file
+    echo "" | tee -a $log_file
+}
+
+function sync() {
+    for (( i = 0; i < $(jq ".remote_servers | length" ${config_json}); i++ ));
+    do
+        remote_server=$(jq -r ".remote_servers[$i]" ${config_json})
+        for (( j = 0; j < $(jq ".sync_dirs | length" ${config_json}); j++ )); 
+        do
+            local_dir=$(jq -r ".sync_dirs[$j].local" ${config_json})
+            remote_dir=$(jq -r ".sync_dirs[$j].remote" ${config_json})
+            if [[ "X$changed" != "X" && ! "$changed" =~ "${local_dir}" ]]; then
+                continue
+            fi
+            log "Sync files from [${local_dir}] to [${remote_server}:${remote_dir}]"
+            rsync -av $local_dir/* ${remote_server}:$remote_dir | log
+        done
+    done
+    success "Sync files done."
+}
+
+config_json=~/.mysync.json
+log_file=$(jq -r ".log_file" ${config_json})
+
+changed=${1:-}
+sync
