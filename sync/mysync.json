@@ -1,0 +1,15 @@
+{
+    "log_file": "～/mysync.log",
+    "watch_dirs": [
+        "~/github"
+    ],
+    "remote_servers": [
+        "root@9.134.144.51"
+    ],
+    "sync_dirs": [
+      {
+          "local": "~/github",
+          "remote": "/root/github"
+      }
+    ]
+}

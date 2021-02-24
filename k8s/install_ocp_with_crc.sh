@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
 # 1.1 Downloading ocp crc comand cli and archive crc to local PATH
-wget https://mirror.openshift.com/pub/openshift-v4/clients/crc/1.0.0-beta.3/crc-linux-amd64.tar.xz | sudo tar --strip-components=1 -xf -C /usr/local/bin/ crc-linux-1.0.0-beta.3-amd64/crc
+wget https://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/crc-linux-amd64.tar.xz
+xz xz -d crc-linux-amd64.tar.xz
+cp crc-linux-1.24.0-amd64/crc /usr/local/bin
+
 curl -L https://github.com/dhiltgen/docker-machine-kvm/releases/download/v0.10.0/docker-machine-driver-kvm-ubuntu16.04 > docker-machine-driver-kvm
 sudo mv docker-machine-driver-kvm /usr/local/bin/
 sudo chmod +x /usr/local/bin/docker-machine-driver-kvm

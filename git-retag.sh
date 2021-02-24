@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-tagname=${tagname:-v2.0.0}
+tagname=${tagname:-olm-v0.17.0}
 git tag -d $tagname
 git push origin :refs/tags/$tagname
 git tag -a $tagname -m $tagname
