@@ -42,7 +42,42 @@ Channel(channel.apps.open-cluster-management.io) 定义了订阅的源仓库，�
 
 ## PlacementRule
 
-PlacementRule(placementrule.apps.open-cluster-management.io) 定义了可部署资源模板的目标集群。使用放置规则帮助您促进可部署资源的多集群部署。放置策略也用于监管和风险策略。
+PlacementRule(placementrule.apps.open-cluster-management.io) 定义了可部署资源模板的目标集群。目前可通过以下4个策略来对目标集群过滤。
+
+1. 通过 ClusterReplicas 选择部署集群的数量
+
+    ```yaml
+    spec:
+      clusterReplicas: 2
+    ```
+
+1. 通过 Cluster Labels 选择部署集群
+
+    ```yaml
+    spec:
+      clusterSelector:
+        matchLabels:
+          environment: Dev
+    ```
+
+1. 通过Cluster Resource的选择策略是对`CPU` 或者 `Mem` 排序，从大到小选择或者从小到大选择
+
+    ```yaml
+    spec:
+      resourceHint:
+        type: cpu # or memory
+        order: asc # or desc
+    ```
+
+1. 通过ClusterConditions 选择部署集群
+
+    ```yaml
+    spec:
+      clusterConditions:
+        - type: ManagedClusterConditionAvailable
+          status: "True"
+    ```
+
 [API](https://github.com/open-cluster-management/multicloud-operators-placementrule/blob/main/pkg/apis/apps/v1/placementrule_types.go) | [Sample](#placementrule-sample)
 
 ## WorkFlow
