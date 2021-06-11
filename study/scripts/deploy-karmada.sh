@@ -18,7 +18,7 @@ kubectl config use-context karmada-apiserver
 KARMADACTL=$(which karmadactl 2>/dev/null)
 if [[ "X$KARMADACTL" == "X" ]]; then
   echo "Installing karmadactl cmd"
-go get github.com/karmada-io/karmada/cmd/karmadactl
+  go get github.com/karmada-io/karmada/cmd/karmadactl
 fi
 
 echo "Join member cluster to karmada"
@@ -44,7 +44,7 @@ spec:
         app: nginx
     spec:
       containers:
-      - image: nginx
+      - image: docker.io/nginx
         name: nginx
 EOF
 
@@ -69,7 +69,7 @@ echo "Check po on memeber1 cluster"
 kubectl --context member1 get deploy,po -n default
 kubectl --context member2 get deploy,po -n default
 
-echo 
+echo "Deploy ReplicaSchedulingPolicy"
 kubectl apply -f - <<EOF
 apiVersion: policy.karmada.io/v1alpha1
 kind: ReplicaSchedulingPolicy
