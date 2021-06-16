@@ -139,6 +139,21 @@ spec:
     placementRef: 
       name: towhichcluster
       kind: PlacementRule
+  packageOverrides:
+  - packageName: nginx-ingress
+    packageOverrides:
+    - path: spec
+      value:
+        defaultBackend:
+          replicaCount: 1
+  timewindow:
+    windowtype: "active"
+    location: "America/Toronto"
+    hours:
+      - start: "9:00AM"
+        end: "11:50AM"
+      - start: "12:00PM"
+        end: "6:30PM"
 ```
 
 ### Channel Sample
