@@ -88,7 +88,7 @@ deploy_managed_cluster() {
   export MANAGED_CLUSTER=${NAME}
   export KLUSTERLET_KIND_KUBECONFIG=~/${NAME}-kubeconfig
   export HUB_KIND_KUBECONFIG=~/${hub_cluster_name}-kubeconfig
-  make deploy-spoke-kind
+  make deploy-spoke
 }
 
 approve_csrs() {
@@ -123,7 +123,7 @@ deploy_application_operators() {
   done
 }
 
-deploy_application() {
+sample_application() {
   kubectl config use-context kind-${hub_cluster_name}
   kubectl apply -f deployment.yaml
 
@@ -133,8 +133,8 @@ deploy_application() {
   kubectl -n default get appsub,placementrule,channel,deployable
   for NAME in ${managed_cluster_names[@]}
   do
-    msg "Fetch resources on $NAME, run command: kubectl --context kind-${NAME} -n default get deploy,po"
-    kubectl --context kind-${NAME} -n default get deploy,po
+    msg "Fetch resources on $NAME, run command: kubectl --context kind-${NAME} -n ${NAME} get deploy,po"
+    kubectl --context kind-${NAME} -n ${NAME} get deploy,po
   done
 }
 
@@ -162,8 +162,8 @@ cleanup_all_clusters () {
 
 clone_code() {
   git clone https://github.com/kubernetes-app/mcm-example-apps.git
-  git clone https://github.com/kubernetes-app/registration-operator.git
-  git clone https://github.com/kubernetes-app/multicloud-operators-subscription.git
+  git clone -b develop https://github.com/kubernetes-app/registration-operator.git
+  git clone -b develop https://github.com/kubernetes-app/multicloud-operators-subscription.git
 }
 
 #------------------------------------------- main ---------------------------------------#
@@ -192,8 +192,10 @@ if [[ "X$1" == "X" || "$1" == "install" ]]; then
   pushd multicloud-operators-subscription >/dev/null
   deploy_application_operators
   popd >/dev/null
+
+  title "Step 4: Deploy a sample application"
   pushd mcm-example-apps >/dev/null
-  deploy_application
+  sample_application
   popd >/dev/null
 elif [[ "$1" == "add" ]]; then
   pushd registration-operator >/dev/null
@@ -212,8 +214,8 @@ elif [[ "$1" == "add-app" ]]; then
   pushd multicloud-operators-subscription >/dev/null
   title "Step 1: Deploy application lifecycle components"
   deploy_application_operators
-  title "Step 2: Deploy application"
-  deploy_application
+  title "Step 2: Deploy a sample application"
+  sample_application
   popd >/dev/null
 elif [[ "$1" == "add-label" ]]; then
   add_label_for_managed_clusters
