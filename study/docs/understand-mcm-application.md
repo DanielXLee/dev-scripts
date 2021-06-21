@@ -9,6 +9,7 @@
   - [Channel](#channel)
   - [PlacementRule](#placementrule)
   - [WorkFlow](#workflow)
+  - [支持不同厂商的多集群或者混合云](#支持不同厂商的多集群或者混合云)
   - [示例](#示例)
     - [Application Sample](#application-sample)
     - [Subscription Sample](#subscription-sample)
@@ -100,6 +101,55 @@ IBM 多集群基础架构
   1. 在 `Hub` cluster 上创建 `Subscription`, `Channel`, `PlacementRule` 资源， `multicloud-operators-subscription` operator 会根据 `Channel`, `PlacementRule` 创建 `Deployable` 资源。
 
   1. 等待 `Deployable` 资源准备好后，`Managed` clusters 上面的 `Subscription` agent 会同步 `Hub` cluster 上面的 `Deployable` 资源，如果发现 `PlacementRule` 中包含自己，就会创建 `Deployable` template 的资源。
+
+## 支持不同厂商的多集群或者混合云
+
+目前ocm的多集群应用管理紧耦合的依赖ocm注册集群信息 `ManagedCluster`, 应用分发策略需要根据管理集群的信息做出判断。
+为了能灵活的支持不同厂商的多集群，分发策略这一部分可以按照不同的厂商去做不同的实现。
+
+```yaml
+apiVersion: cluster.open-cluster-management.io/v1
+kind: ManagedCluster
+metadata:
+  creationTimestamp: "2021-06-18T07:41:55Z"
+  finalizers:
+  - cluster.open-cluster-management.io/api-resource-cleanup
+  generation: 2
+  name: cluster1
+  resourceVersion: "1275"
+  uid: 1460d93b-78e4-41cf-9b62-bc7c9629e7f6
+spec:
+  hubAcceptsClient: true
+  leaseDurationSeconds: 60
+  managedClusterClientConfigs:
+  - caBundle: LS0tLS1CRUdJTiBDRVJUSUZJ .... 0tLS0tCg==
+    url: https://localhost
+status:
+  allocatable:
+    cpu: "8"
+    memory: 15753Mi
+  capacity:
+    cpu: "8"
+    memory: 15753Mi
+  conditions:
+  - lastTransitionTime: "2021-06-18T07:42:29Z"
+    message: Accepted by hub cluster admin
+    reason: HubClusterAdminAccepted
+    status: "True"
+    type: HubAcceptedManagedCluster
+  - lastTransitionTime: "2021-06-18T07:42:29Z"
+    message: Managed cluster is available
+    reason: ManagedClusterAvailable
+    status: "True"
+    type: ManagedClusterConditionAvailable
+  - lastTransitionTime: "2021-06-18T07:42:29Z"
+    message: Managed cluster joined
+    reason: ManagedClusterJoined
+    status: "True"
+    type: ManagedClusterJoined
+  version:
+    kubernetes: v1.20.2
+```
 
 ## 示例
 
