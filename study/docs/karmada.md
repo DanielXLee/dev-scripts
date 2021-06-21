@@ -16,6 +16,15 @@
 
 ## Karmada 注册集群
 
+Karmada 注册集群列表
+
+```shell
+kubectl get clusters
+NAME      VERSION   MODE   READY   AGE
+member1   v1.20.2   Push   True    135m
+member2   v1.20.2   Push   True    135m
+```
+
 ```yaml
 apiVersion: cluster.karmada.io/v1alpha1
 kind: Cluster
