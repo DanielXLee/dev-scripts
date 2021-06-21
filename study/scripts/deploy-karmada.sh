@@ -1,31 +1,55 @@
 #!/usr/bin/env bash
 
-git clone https://github.com/karmada-io/karmada.git
+msg() {
+  printf '%b\n' "$1"
+}
+
+success() {
+  msg "\33[32m[✔] ${1}\33[0m"
+}
+
+warning() {
+  msg "\33[33m[✗] ${1}\33[0m"
+}
+
+error() {
+  msg "\33[31m[✘] ${1}\33[0m"
+}
+
+title() {
+  msg "\33[34m# ${1}\33[0m"
+}
 
 KUBECONFIG="$HOME/.kube/config"
+KARMADA_KUBECONFIG=$HOME/.kube/karmada.config
+rm -rf karmada $KUBECONFIG $KARMADA_KUBECONFIG
+kind delete cluster --name karmada-host
+kind delete cluster --name member1
+kind delete cluster --name member2
+git clone https://github.com/karmada-io/karmada.git
 
-echo "Creating local up karmada cluster"
+title "Creating local up karmada cluster"
 ./karmada/hack/local-up-karmada.sh
-cp $HOME/.kube/karmada.config $KUBECONFIG
+cp $KARMADA_KUBECONFIG $KUBECONFIG
 
-echo "Creating member cluster"
+title "Creating member cluster"
 ./karmada/hack/create-cluster.sh member1 $KUBECONFIG
 ./karmada/hack/create-cluster.sh member2 $KUBECONFIG
 
-echo "Switch to karmada-apiserver context"
+title "Switch to karmada-apiserver context"
 kubectl config use-context karmada-apiserver
 
 KARMADACTL=$(which karmadactl 2>/dev/null)
 if [[ "X$KARMADACTL" == "X" ]]; then
-  echo "Installing karmadactl cmd"
+  title "Installing karmadactl cmd"
   go get github.com/karmada-io/karmada/cmd/karmadactl
 fi
 
-echo "Join member cluster to karmada"
+title "Join member cluster to karmada"
 karmadactl join member1 --cluster-kubeconfig=$KUBECONFIG
 karmadactl join member2 --cluster-kubeconfig=$KUBECONFIG
 
-echo "Deploy a sample"
+title "Deploy a sample"
 kubectl apply -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -65,11 +89,11 @@ spec:
         - member2
 EOF
 
-echo "Check po on memeber1 cluster"
+title "Check po on memeber1 cluster"
 kubectl --context member1 get deploy,po -n default
 kubectl --context member2 get deploy,po -n default
 
-echo "Deploy ReplicaSchedulingPolicy"
+title "Deploy ReplicaSchedulingPolicy"
 kubectl apply -f - <<EOF
 apiVersion: policy.karmada.io/v1alpha1
 kind: ReplicaSchedulingPolicy
@@ -92,6 +116,6 @@ spec:
         weight: 2
 EOF
 
-echo "Check pods with schedule policy"
+title "Check pods with schedule policy"
 kubectl --context member1 get deploy,po -n default
 kubectl --context member2 get deploy,po -n default

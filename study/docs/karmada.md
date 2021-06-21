@@ -14,6 +14,57 @@
 1. ExecutionController watch 到 Work 对象，提取 `spec.workload` 定义的对象，然后调用 worker 集群的 client 来创建和修改对象
 1. 而 worker 集群的 Agent 则同样会 watch Work 对象并同步 Workload 的状态到 Work
 
+## Karmada 注册集群
+
+```yaml
+apiVersion: cluster.karmada.io/v1alpha1
+kind: Cluster
+metadata:
+  finalizers:
+  - karmada.io/cluster-controller
+  name: member1
+  resourceVersion: "470"
+  selfLink: /apis/cluster.karmada.io/v1alpha1/clusters/member1
+  uid: d47d2723-afd7-4ced-8218-909027b3c59b
+spec:
+  apiEndpoint: https://172.18.0.3:6443
+  secretRef:
+    name: member1
+    namespace: karmada-cluster
+  syncMode: Push
+status:
+  apiEnablements:
+  - groupVersion: v1
+    resources:
+    - bindings
+    - componentstatuses
+...
+  conditions:
+  - lastTransitionTime: "2021-06-21T03:54:38Z"
+    message: cluster is reachable and health endpoint responded with ok
+    reason: ClusterReady
+    status: "True"
+    type: Ready
+  kubernetesVersion: v1.20.2
+  nodeSummary:
+    readyNum: 1
+    totalNum: 1
+  resourceSummary:
+    allocatable:
+      cpu: "8"
+      ephemeral-storage: 103079844Ki
+      hugepages-1Gi: "0"
+      hugepages-2Mi: "0"
+      memory: 16131904Ki
+      pods: "110"
+    allocated:
+      cpu: 950m
+      memory: 290Mi
+    allocating:
+      cpu: "0"
+      memory: "0"
+```
+
 ## Karmada优点和缺点
 
 ### 优点
