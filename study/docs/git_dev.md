@@ -99,6 +99,12 @@ source ~/.zshrc
 
 更多`git`和`github`相关的使用可以参考[Github Docs](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/syncing-a-fork)
 
+## 添加子项目
+
+```yaml
+git submodule add https://github.com/DanielXLee/multicloud-operators-placementrule staging/github.com/DanielXLee/multicloud-operators-placementrule
+```
+
 ## 其它的问题
 
 1. 如果开发机器的默认的 ssh 端口被修改了，为了免密 push code，我们需要在`~/.ssh/config`中添加一些配置

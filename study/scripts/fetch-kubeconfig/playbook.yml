@@ -1,0 +1,20 @@
+---
+- hosts: all
+  gather_facts: False
+  name: Copy scripts to all nodes
+  remote_user: root
+  tasks:
+  - name: Copy kubeconfig file to local
+    ansible.builtin.fetch:
+      src: /root/.kube/config
+      dest: "{{ cluster_name }}"
+      flat: yes
+
+- hosts: localhost
+  gather_facts: False
+  name: Backup kubeconfig
+  tasks:
+  - name: Backup old config
+    ansible.builtin.copy:
+      src: ~/.kube/config
+      dest: ~/.kube/config.backup
