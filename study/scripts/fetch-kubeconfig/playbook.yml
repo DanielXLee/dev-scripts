@@ -2,7 +2,6 @@
 - hosts: all
   gather_facts: False
   name: Copy scripts to all nodes
-  remote_user: root
   tasks:
   - name: Copy kubeconfig file to local
     ansible.builtin.fetch:
